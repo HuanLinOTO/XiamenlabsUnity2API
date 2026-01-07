@@ -1,4 +1,4 @@
-FROM rust:latest-slim as builder
+FROM rust:1.92.0-slim as builder
 
 WORKDIR /app
 
