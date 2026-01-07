@@ -11,8 +11,9 @@ RUN mkdir src && \
     cargo build --release && \
     rm -rf src
 
-# 复制源代码
+# 复制源代码和 Web UI
 COPY src ./src
+COPY web ./web
 
 # 构建应用
 RUN cargo build --release
