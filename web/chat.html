@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XiamenLabs OpenAI Proxy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            background: white;
+            border-radius: 1rem;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #4f46e5;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: #f9fafb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e5e7eb;
+        }
+
+        .card h2 {
+            color: #111827;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .card p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: #4f46e5;
+            color: white;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .button:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+        }
+
+        .button.secondary {
+            background: #6b7280;
+        }
+
+        .button.secondary:hover {
+            background: #4b5563;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 0.5rem;
+            color: #166534;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        code {
+            background: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🚀 XiamenLabs OpenAI Proxy</h1>
+        <p class="subtitle">OpenAI 兼容的高性能 API 代理服务器</p>
+
+        <div class="status" id="status">
+            <div class="status-dot"></div>
+            <span id="statusText">检查服务器状态...</span>
+        </div>
+
+        <div class="card">
+            <h2>💬 开始对话</h2>
+            <p>使用我们的网页聊天界面与 AI 助手交流</p>
+            <div class="button-group">
+                <a href="./chat.html" class="button">
+                    <span>💬</span>
+                    <span>打开聊天界面</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔌 API 端点</h2>
+            <p>服务器提供以下 OpenAI 兼容的 API 端点：</p>
+            <ul class="feature-list">
+                <li><code>GET /v1/models</code> - 列出可用模型</li>
+                <li><code>POST /v1/chat/completions</code> - 聊天补全</li>
+            </ul>
+            <div class="button-group">
+                <a href="http://localhost:8080/v1/models" class="button secondary" target="_blank">
+                    <span>📋</span>
+                    <span>查看模型列表</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📚 使用文档</h2>
+            <p>查看完整的使用指南和 API 文档</p>
+            <div class="button-group">
+                <a href="https://github.com/yourusername/XiamenlabsUnity2API" class="button secondary" target="_blank">
+                    <span>📖</span>
+                    <span>GitHub 仓库</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>✨ 功能特性</h2>
+            <ul class="feature-list">
+                <li>完全兼容 OpenAI API 格式</li>
+                <li>支持流式和非流式响应</li>
+                <li>自动 Prompt 注入功能</li>
+                <li>高性能异步架构</li>
+                <li>完整的 CORS 支持</li>
+                <li>详细的日志记录</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 检查 API 状态
+        async function checkStatus() {
+            const statusEl = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+
+            try {
+                const response = await fetch('http://localhost:8080/v1/models');
+                if (response.ok) {
+                    statusText.textContent = '服务器运行正常';
+                    statusEl.style.background = '#f0fdf4';
+                    statusEl.style.borderColor = '#86efac';
+                    statusEl.style.color = '#166534';
+                } else {
+                    throw new Error('服务器响应异常');
+                }
+            } catch (error) {
+                statusText.textContent = '无法连接到服务器 (http://localhost:8080)';
+                statusEl.style.background = '#fef2f2';
+                statusEl.style.borderColor = '#fca5a5';
+                statusEl.style.color = '#991b1b';
+                statusEl.querySelector('.status-dot').style.background = '#ef4444';
+            }
+        }
+
+        checkStatus();
+        setInterval(checkStatus, 10000);
+    </script>
+</body>
+
+</html>

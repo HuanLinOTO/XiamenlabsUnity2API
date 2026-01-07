@@ -1,0 +1,12 @@
+/target
+Cargo.lock
+.env
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# 用户自定义配置（可选择提交示例文件 prompt.md.example）
+prompt.md
