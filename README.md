@@ -79,6 +79,14 @@ cargo run --release
 
 详见 [Reasoning 支持文档](.agent/docs/Stage1/reasoning-support.md)
 
+### 📦 容器镜像
+
+GitHub Actions 会将镜像推送到 GitHub Container Registry（GHCR）：
+
+```bash
+docker pull ghcr.io/huanlinoto/XiamenlabsUnity2API:latest
+```
+
 ### 环境变量配置
 
 ```bash

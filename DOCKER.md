@@ -2,11 +2,19 @@
 
 ## 使用预构建镜像
 
-如果你已经推送到 Docker Hub：
+镜像现已发布到 GitHub Container Registry (GHCR)：
 
 ```bash
-docker pull yourusername/xiamenlabs-openai-proxy:latest
-docker run -p 8080:8080 yourusername/xiamenlabs-openai-proxy:latest
+docker pull ghcr.io/<your-org-or-username>/xiamenlabs-openai-proxy:latest
+docker run -p 8080:8080 ghcr.io/<your-org-or-username>/xiamenlabs-openai-proxy:latest
+```
+
+> 将 `<your-org-or-username>` 替换为托管仓库的 GitHub 组织或用户名。
+
+或登录 GHCR 拉取：
+
+```bash
+echo $GITHUB_TOKEN | docker login ghcr.io -u <your-gh-username> --password-stdin
 ```
 
 ## 本地构建镜像
@@ -38,7 +46,7 @@ version: "3.8"
 
 services:
   proxy:
-    image: xiamenlabs-openai-proxy
+  image: ghcr.io/<your-org-or-username>/xiamenlabs-openai-proxy
     build: .
     ports:
       - "8080:8080"

@@ -205,6 +205,13 @@
             font-size: 0.875rem;
         }
 
+        .response-content {
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
         /* 推理内容样式 */
         .reasoning-section {
             background: rgba(79, 70, 229, 0.05);
@@ -489,12 +496,28 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked@5.1.1/marked.min.js"
+        integrity="sha256-Zq+UpBAkLTlaX2UjsFvdcGaVbL50DJBSSTXobHxPPH8=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.3/dist/purify.min.js"
+        integrity="sha256-rPwQxzb62LF8oT+yQUwSWOSJyYwcmBHQYaWV7z/akXI=" crossorigin="anonymous"></script>
     <script>
         // 配置
         const API_BASE_URL = 'http://localhost:8080/v1';
         let conversationHistory = [];
         let isStreaming = true;
         let isProcessing = false;
+
+        marked.setOptions({
+            gfm: true,
+            breaks: true,
+        });
+
+        function renderMarkdown(text) {
+            const html = marked.parse(text || '');
+            return DOMPurify.sanitize(html, {
+                USE_PROFILES: { html: true },
+            });
+        }
 
         // DOM 元素
         const chatArea = document.getElementById('chatArea');
@@ -583,7 +606,6 @@
             const assistantMessage = addMessage('assistant', '');
             const messageContent = assistantMessage.querySelector('.message-content');
 
-            // 添加加载动画
             const typingIndicator = document.createElement('div');
             typingIndicator.className = 'typing-indicator';
             typingIndicator.innerHTML = '<span></span><span></span><span></span>';
@@ -631,11 +653,9 @@
                                 const parsed = JSON.parse(data);
                                 const delta = parsed.choices[0]?.delta;
 
-                                // 处理推理内容
                                 if (delta?.reasoning) {
                                     fullReasoning += delta.reasoning;
 
-                                    // 创建或更新推理区域
                                     if (!reasoningSection) {
                                         reasoningSection = document.createElement('div');
                                         reasoningSection.className = 'reasoning-section';
@@ -650,22 +670,20 @@
                                     }
 
                                     const reasoningContent = reasoningSection.querySelector('.reasoning-content');
-                                    reasoningContent.textContent = fullReasoning;
+                                    reasoningContent.innerHTML = renderMarkdown(fullReasoning);
                                     scrollToBottom();
                                 }
 
-                                // 处理正常回复内容
                                 if (delta?.content) {
                                     fullResponse += delta.content;
 
-                                    // 创建内容区域（如果还没有）
                                     if (!contentSection) {
                                         contentSection = document.createElement('div');
                                         contentSection.className = 'response-content';
                                         messageContent.appendChild(contentSection);
                                     }
 
-                                    contentSection.textContent = fullResponse;
+                                    contentSection.innerHTML = renderMarkdown(fullResponse);
                                     scrollToBottom();
                                 }
                             } catch (e) {
@@ -714,7 +732,7 @@
                 const content = data.choices[0]?.message?.content || '没有响应内容';
 
                 typingIndicator.remove();
-                messageContent.textContent = content;
+                messageContent.innerHTML = renderMarkdown(content);
                 conversationHistory.push({ role: 'assistant', content });
                 scrollToBottom();
             } catch (error) {
@@ -734,7 +752,7 @@
 
             const messageContent = document.createElement('div');
             messageContent.className = 'message-content';
-            messageContent.textContent = content;
+            messageContent.innerHTML = renderMarkdown(content);
 
             messageDiv.appendChild(avatar);
             messageDiv.appendChild(messageContent);
