@@ -61,11 +61,14 @@ async fn main() -> std::io::Result<()> {
             // 根路径重定向
             .route("/", web::get().to(redirect_to_web))
             // Web UI 静态资源（嵌入式）
-            .route("/web", web::get().to(|| async {
-                HttpResponse::Found()
-                    .append_header(("Location", "/web/"))
-                    .finish()
-            }))
+            .route(
+                "/web",
+                web::get().to(|| async {
+                    HttpResponse::Found()
+                        .append_header(("Location", "/web/"))
+                        .finish()
+                }),
+            )
             .route("/web/{path:.*}", web::get().to(embedded_web))
     })
     .bind(("0.0.0.0", 8080))?

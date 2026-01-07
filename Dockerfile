@@ -5,10 +5,10 @@ WORKDIR /app
 # 安装构建依赖（openssl 等）
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        pkg-config \
-        libssl-dev \
-        ca-certificates \
-        build-essential && \
+    pkg-config \
+    libssl-dev \
+    ca-certificates \
+    build-essential && \
     rm -rf /var/lib/apt/lists/*
 
 # 复制依赖文件
