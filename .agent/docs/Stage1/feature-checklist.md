@@ -53,9 +53,9 @@
 ### 后端
 
 - Rust 1.75+
-- Actix-web 4.9
-- Actix-files 0.6
-- Reqwest 0.12 (with streaming)
+ - Actix-web 4.9
+ - Rust-embed 8（内置静态资源）
+ - Reqwest 0.12 (with streaming)
 - Serde 1.0
 - Tokio 1.x
 

@@ -2,6 +2,15 @@ FROM rust:1.75-slim as builder
 
 WORKDIR /app
 
+# 安装构建依赖（openssl 等）
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        pkg-config \
+        libssl-dev \
+        ca-certificates \
+        build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
 # 复制依赖文件
 COPY Cargo.toml Cargo.lock ./
 
@@ -14,25 +23,23 @@ RUN mkdir src && \
 # 复制源代码和 Web UI
 COPY src ./src
 COPY web ./web
+COPY prompt.md.example ./prompt.md.example
 
 # 构建应用
 RUN cargo build --release
 
-# 运行时镜像
 FROM debian:bookworm-slim
 
-# 安装运行时依赖
 RUN apt-get update && \
-    apt-get install -y ca-certificates && \
+    apt-get install -y --no-install-recommends ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# 从构建阶段复制二进制文件
+# 从构建阶段复制二进制文件与静态资源
 COPY --from=builder /app/target/release/xiamenlabs-openai-proxy /app/
-
-# 复制示例 prompt 文件
-COPY prompt.md.example /app/prompt.md.example
+COPY --from=builder /app/web /app/web
+COPY --from=builder /app/prompt.md.example /app/prompt.md.example
 
 # 设置环境变量
 ENV RUST_LOG=info
