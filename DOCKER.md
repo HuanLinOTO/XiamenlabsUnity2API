@@ -19,11 +19,18 @@ echo $GITHUB_TOKEN | docker login ghcr.io -u <your-gh-username> --password-stdin
 
 ## 本地构建镜像
 
-```bash
-# 构建镜像
-docker build -t xiamenlabs-openai-proxy .
+方式 A：使用预编译二进制（与 CI 逻辑一致，推荐）
 
-# 运行容器
+```bash
+# 假设你已有 xiamenlabs-openai-proxy (Linux amd64) 二进制放在仓库根目录
+docker build -f Dockerfile.runtime -t xiamenlabs-openai-proxy .
+docker run -p 8080:8080 xiamenlabs-openai-proxy
+```
+
+方式 B：源码构建（不依赖预编译产物）
+
+```bash
+docker build -t xiamenlabs-openai-proxy .
 docker run -p 8080:8080 xiamenlabs-openai-proxy
 ```
 

@@ -106,12 +106,24 @@ jobs:
     permissions:
       contents: read
       packages: write
+    needs: build
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Download Linux binary artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: xiamenlabs-openai-proxy-linux-amd64
+          path: ./artifact
+
+      - name: Prepare binary for image
+        run: |
+          ls -l ./artifact
+          cp ./artifact/xiamenlabs-openai-proxy ./xiamenlabs-openai-proxy
 
       - name: Login to GitHub Container Registry
         if: github.event_name != 'pull_request'
@@ -134,11 +146,12 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=sha
 
-      - name: Build and push
+      - name: Build and push (reusing prebuilt binary)
         uses: docker/build-push-action@v5
         with:
+          file: Dockerfile.runtime
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

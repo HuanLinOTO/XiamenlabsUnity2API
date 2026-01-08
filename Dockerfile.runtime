@@ -1,0 +1,18 @@
+FROM debian:bookworm-slim
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# 由 CI 预先构建好的静态链接二进制（包含嵌入的 Web 资源）
+COPY xiamenlabs-openai-proxy /app/xiamenlabs-openai-proxy
+# 示例 prompt
+COPY prompt.md.example /app/prompt.md.example
+
+ENV RUST_LOG=info
+
+EXPOSE 8080
+
+CMD ["/app/xiamenlabs-openai-proxy"]
