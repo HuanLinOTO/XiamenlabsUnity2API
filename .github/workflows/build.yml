@@ -67,11 +67,20 @@ jobs:
         run: cargo test --verbose
 
       - name: Build release
+        env:
+          RUSTFLAGS: "-C link-arg=-s"
         run: cargo build --release --target ${{ matrix.target }}
 
       - name: Strip binary (Linux and macOS)
         if: matrix.os != 'windows-latest'
         run: strip target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
+
+      - name: UPX compress (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y upx
+          upx --best --lzma target/${{ matrix.target }}/release/${{ matrix.artifact_name }} || true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -157,3 +166,58 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  package:
+    name: Package all artifacts
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: xiamenlabs-openai-proxy-linux-amd64
+          path: artifacts/linux
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: xiamenlabs-openai-proxy-windows-amd64.exe
+          path: artifacts/windows
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: xiamenlabs-openai-proxy-macos-amd64
+          path: artifacts/macos
+
+      - name: Install UPX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y upx || true
+
+      - name: Optimize binaries and assemble package
+        run: |
+          set -e
+          mkdir -p out
+          # Try UPX compression where supported
+          if [ -f artifacts/linux/xiamenlabs-openai-proxy ]; then
+            upx --best --lzma artifacts/linux/xiamenlabs-openai-proxy || true
+            cp artifacts/linux/xiamenlabs-openai-proxy out/xiamenlabs-openai-proxy-linux
+          fi
+          if [ -f artifacts/windows/xiamenlabs-openai-proxy-windows-amd64.exe ]; then
+            upx --best --lzma artifacts/windows/xiamenlabs-openai-proxy-windows-amd64.exe || true
+            cp artifacts/windows/xiamenlabs-openai-proxy-windows-amd64.exe out/xiamenlabs-openai-proxy-windows.exe
+          fi
+          if [ -f artifacts/macos/xiamenlabs-openai-proxy ]; then
+            # macOS UPX support is limited; fallback to gzip for size
+            gzip -9 -c artifacts/macos/xiamenlabs-openai-proxy > out/xiamenlabs-openai-proxy-macos.gz || true
+          fi
+          tar czf xiamenlabs-openai-proxy-all.tar.gz -C out .
+          ls -lh xiamenlabs-openai-proxy-all.tar.gz
+
+      - name: Upload combined archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: xiamenlabs-openai-proxy-all
+          path: xiamenlabs-openai-proxy-all.tar.gz
