@@ -4,6 +4,10 @@ on:
   push:
     branches: [main, master]
 
+permissions:
+  contents: read
+  packages: write
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -99,6 +103,9 @@ jobs:
     name: Build Docker Image
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - uses: actions/checkout@v4
