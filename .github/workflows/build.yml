@@ -133,6 +133,7 @@ jobs:
         run: |
           ls -l ./artifact
           cp ./artifact/xiamenlabs-openai-proxy ./xiamenlabs-openai-proxy
+          chmod +x ./xiamenlabs-openai-proxy
 
       - name: Login to GitHub Container Registry
         if: github.event_name != 'pull_request'

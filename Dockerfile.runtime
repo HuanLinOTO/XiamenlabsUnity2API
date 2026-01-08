@@ -8,6 +8,7 @@ WORKDIR /app
 
 # 由 CI 预先构建好的静态链接二进制（包含嵌入的 Web 资源）
 COPY xiamenlabs-openai-proxy /app/xiamenlabs-openai-proxy
+RUN chmod +x /app/xiamenlabs-openai-proxy
 # 示例 prompt
 COPY prompt.md.example /app/prompt.md.example
 
